@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import listEndpoints from "express-list-endpoints"
 import blogPostsRouter from "./services/blogPost/index.js"
+import authorsRouter from "./services/authors/index.js"
 import { genericErrorHandler, badRequestHandler, notFoundHandler } from "./errorHandlers.js"
 
 const server = express()
@@ -10,6 +11,7 @@ const server = express()
 server.use(cors())
 server.use(express.json())
 server.use("/blogPosts", blogPostsRouter)
+server.use("/authors", authorsRouter)
 
 server.use(badRequestHandler)
 server.use(notFoundHandler)

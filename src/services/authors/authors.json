@@ -1,0 +1,48 @@
+[
+    {
+        "name": "John",
+        "surname": "Smith",
+        "email": "JohnSmith@strive.com",
+        "dob": "13062000"
+    },
+    {
+        "name": "adam",
+        "surname": "bel",
+        "email": "JohnSmith@strive.com",
+        "dob": "13062000",
+        "createdAt": "2021-10-19T14:39:57.341Z",
+        "id": "1xr28z3kkuy70tct"
+    },
+    {
+        "name": "${{$randomFirstName}",
+        "surname": "$Brakus",
+        "email": "$Delphia64@yahoo.com",
+        "dob": "13062000",
+        "createdAt": "2021-10-19T14:45:35.237Z",
+        "id": "1xr28z3kkuy7822t"
+    },
+    {
+        "name": "$Harvey",
+        "surname": "$Kilback",
+        "email": "$Molly.Kuphal@hotmail.com",
+        "dob": "13062000",
+        "createdAt": "2021-10-19T14:45:45.853Z",
+        "id": "1xr28z3kkuy78a9p"
+    },
+    {
+        "name": "Lilyan",
+        "surname": "Schmidt",
+        "email": "Shawn_Denesik7@yahoo.com",
+        "dob": "13062000",
+        "createdAt": "2021-10-19T14:45:53.679Z",
+        "id": "1xr28z3kkuy78gb3"
+    },
+    {
+        "name": "Bailee",
+        "surname": "King",
+        "email": "newEmail@outlook.com",
+        "dob": "{}",
+        "createdAt": "2021-10-20T08:18:23.826Z",
+        "id": "1xr2bc0okuz8tz9v"
+    }
+]
