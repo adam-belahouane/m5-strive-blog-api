@@ -38,11 +38,27 @@ blogPostsRouter.get("/", (req, res ,next) => {
 })
 
 blogPostsRouter.get("/:postid", (req, res ,next) => {
-    
+    try {
+        const blogPosts = getBlogPosts()
+        const blogPost = blogPosts.find((post) => post.id === req.params.postid)
+        res.send(blogPost) 
+        
+    } catch (error) {
+        next(error)
+    }
 })
 
 blogPostsRouter.put("/:postid", (req, res ,next) => {
-    
+    try {
+        const blogPosts = getBlogPosts()
+        const index = blogPosts.findIndex((post) => post.id === req.params.postid)
+        const updatedBlogPost = { ...blogPosts[index], ...req.body}
+        blogPosts[index] = updatedBlogPost
+        writeBlogPosts(blogPosts)
+        res.send(updatedBlogPost)
+    } catch (error) {
+        next(error)
+    }
 })
 
 blogPostsRouter.delete("/:postid", (req, res ,next) => {
