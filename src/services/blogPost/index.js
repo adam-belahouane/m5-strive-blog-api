@@ -62,7 +62,14 @@ blogPostsRouter.put("/:postid", (req, res ,next) => {
 })
 
 blogPostsRouter.delete("/:postid", (req, res ,next) => {
-    
+    try {
+        const blogPosts = getBlogPosts()
+        const remainingBlogPosts = blogPosts.filter((post) => post.id !== req.params.postid)
+        writeBlogPosts(remainingBlogPosts)
+        res.status(204).send()
+    } catch (error) {
+        next(error)
+    }
 })
 
 
