@@ -3,6 +3,7 @@ import { fileURLToPath } from "url"
 import { dirname, join } from "path"
 import fs from "fs"
 import uniqid from "uniqid"
+import createHttpError from "http-errors"
 
 const blogPostsRouter = express.Router()
 
@@ -41,7 +42,11 @@ blogPostsRouter.get("/:postid", (req, res ,next) => {
     try {
         const blogPosts = getBlogPosts()
         const blogPost = blogPosts.find((post) => post.id === req.params.postid)
-        res.send(blogPost) 
+        if(blogPost){
+            res.send(blogPost) 
+        } else {
+            next(createHttpError(404, `blogPost with ${req.params.postid} id does not exist`))
+        }
         
     } catch (error) {
         next(error)
