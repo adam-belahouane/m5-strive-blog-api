@@ -14,7 +14,7 @@ const authorsRouter = express.Router();
 authorsRouter.post("/:authorId/uploadAvatar", multer().single("authorAvatar"), async (req, res, next) => {
   try {
     console.log(req.file);
-    await saveAuthorsAvatars(req.file.originalname, req.file.buffer);
+    await saveAuthorsAvatars( "idOfTheAuthor.jpg", req.file.buffer);
     const authors = await getAuthors()
     const author = authors.find((author) => author.id === req.params.authorId);
     res.send(200);
