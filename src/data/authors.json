@@ -1,11 +1,5 @@
 [
     {
-        "name": "John",
-        "surname": "Smith",
-        "email": "JohnSmith@strive.com",
-        "dob": "13062000"
-    },
-    {
         "name": "adam",
         "surname": "bel",
         "email": "JohnSmith@strive.com",
@@ -44,5 +38,14 @@
         "dob": "{}",
         "createdAt": "2021-10-20T08:18:23.826Z",
         "id": "1xr2bc0okuz8tz9v"
+    },
+    {
+        "name": "${{$randomFirstName}",
+        "surname": "$Brakus",
+        "email": "$Delphia64@yahoo.com",
+        "dob": "13062000",
+        "createdAt": "2021-10-19T14:45:35.237Z",
+        "id": "1xr28z3kkuy7822t",
+        "avatar": "http://localhost:3001/img/authors/1xr28z3kkuy7822tOfTheAuthor.jpg"
     }
 ]

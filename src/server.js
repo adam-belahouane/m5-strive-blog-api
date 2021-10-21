@@ -1,32 +1,34 @@
-import express from "express"
-import cors from "cors"
-import listEndpoints from "express-list-endpoints"
-import { join } from "path"
-import blogPostsRouter from "./services/blogPost/index.js"
-import authorsRouter from "./services/authors/index.js"
-import filesRouter from "./services/files/index.js"
-import { genericErrorHandler, badRequestHandler, notFoundHandler } from "./errorHandlers.js"
+import express from "express";
+import cors from "cors";
+import listEndpoints from "express-list-endpoints";
+import { join } from "path";
+import blogPostsRouter from "./services/blogPost/index.js";
+import authorsRouter from "./services/authors/index.js";
 
+import {
+  genericErrorHandler,
+  badRequestHandler,
+  notFoundHandler,
+} from "./errorHandlers.js";
 
-const server = express()
+const server = express();
 
-const publicFolderPath = join(process.cwd(), "./public")
+const publicFolderPath = join(process.cwd(), "./public");
 
-server.use(express.static(publicFolderPath))
-server.use(cors())
-server.use(express.json())
-server.use("/blogPosts", blogPostsRouter)
-server.use("/authors", authorsRouter)
-server.use("/files", filesRouter)
+server.use(express.static(publicFolderPath));
+server.use(cors());
+server.use(express.json());
+server.use("/blogPosts", blogPostsRouter);
+server.use("/authors", authorsRouter);
 
-server.use(badRequestHandler)
-server.use(notFoundHandler)
-server.use(genericErrorHandler)
+server.use(badRequestHandler);
+server.use(notFoundHandler);
+server.use(genericErrorHandler);
 
-const port = 3001
+const port = 3001;
 
-console.table(listEndpoints(server))
+console.table(listEndpoints(server));
 
 server.listen(port, () => {
-    console.log("server on port:", port)
-})
+  console.log("server on port:", port);
+});

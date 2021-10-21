@@ -9,20 +9,33 @@ import multer from "multer";
 
 const authorsRouter = express.Router();
 
-
-
-authorsRouter.post("/:authorId/uploadAvatar", multer().single("authorAvatar"), async (req, res, next) => {
-  try {
-    console.log(req.file);
-    await saveAuthorsAvatars( "idOfTheAuthor.jpg", req.file.buffer);
-    const authors = await getAuthors()
-    const author = authors.find((author) => author.id === req.params.authorId);
-    res.send(200);
-  } catch (error) {
-    next(error);
+authorsRouter.post(
+  "/:authorId/uploadAvatar",
+  multer().single("authorAvatar"),
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      await saveAuthorsAvatars(
+        req.params.authorId + "OfTheAuthor.jpg",
+        req.file.buffer
+      );
+      const authors = await getAuthors();
+      const author = authors.find(
+        (author) => author.id === req.params.authorId
+      );
+      const avatarUrl = `http://localhost:3001/img/authors/${req.params.authorId}OfTheAuthor.jpg`;
+      const authorWithCover = { ...author, avatar: avatarUrl };
+      const authorsArray = authors.filter(
+        (blogs) => blogs.id !== req.params.authorsId
+      );
+      authorsArray.push(authorWithCover);
+      await writeAuthors(authorsArray);
+      res.send(200);
+    } catch (error) {
+      next(error);
+    }
   }
-});
-
+);
 
 authorsRouter.post("/", async (req, res, next) => {
   try {
