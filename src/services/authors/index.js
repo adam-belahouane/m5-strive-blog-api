@@ -9,15 +9,20 @@ import multer from "multer";
 
 const authorsRouter = express.Router();
 
+
+
 authorsRouter.post("/:authorId/uploadAvatar", multer().single("authorAvatar"), async (req, res, next) => {
   try {
     console.log(req.file);
-    await saveAuthorsAvatars(req.params.authorId + "OfTheAuthor.jpg", req.file.buffer);
-    res.send("ok");
+    await saveAuthorsAvatars(req.file.originalname, req.file.buffer);
+    const authors = await getAuthors()
+    const author = authors.find((author) => author.id === req.params.authorId);
+    res.send(200);
   } catch (error) {
     next(error);
   }
 });
+
 
 authorsRouter.post("/", async (req, res, next) => {
   try {
