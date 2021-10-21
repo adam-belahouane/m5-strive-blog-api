@@ -3,12 +3,23 @@ import uniqid from "uniqid"
 import createHttpError from "http-errors"
 import { validationResult } from "express-validator"
 import { blogPostValidation } from "./validation.js"
-import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js"
+import { getBlogPosts, writeBlogPosts, saveBlogCover } from "../../lib/fs-tools.js"
+import multer from "multer"
 
 const blogPostsRouter = express.Router()
 
 
-
+blogPostsRouter.post("/:blogPostId/uploadCover", multer().single("cover"), async (req, res, next) => {
+    try {
+      console.log(req.file);
+      await saveBlogCover( "idOfTheBlogPost.jpg", req.file.buffer);
+      const blogPosts = await getBlogPosts()
+      const blogPost = blogPosts.find((post) => post.id === req.params.blogPostId);
+      res.send(200);
+    } catch (error) {
+      next(error);
+    }
+  });
 
 blogPostsRouter.post("/", blogPostValidation, async (req, res ,next) => {
     try {
