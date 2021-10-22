@@ -1,6 +1,7 @@
 import express from "express";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
+import { extname } from "path"
 import { validationResult } from "express-validator";
 import { blogPostValidation } from "./validation.js";
 import {
@@ -13,32 +14,67 @@ import multer from "multer";
 const blogPostsRouter = express.Router();
 
 blogPostsRouter.post(
-  "/:blogPostId/uploadCover",
-  multer().single("cover"),
-  async (req, res, next) => {
-    try {
-      console.log(req.file);
-      await saveBlogCover(
-        req.params.blogPostId + "OfTheBlogPost.jpg",
-        req.file.buffer
-      );
-      const blogPosts = await getBlogPosts();
-      const blogPost = blogPosts.find(
-        (blogPost) => blogPost.id === req.params.blogPostId
-      );
-      const coverUrl = `http://localhost:3001/img/blogPosts/${req.params.blogPostId}OfTheBlogPost.jpg`;
-      const blogPostWithCover = { ...blogPost, cover: coverUrl };
-      const blogPostsArray = blogPosts.filter(
-        (blogs) => blogs.id !== req.params.blogPostsId
-      );
-      blogPostsArray.push(blogPostWithCover);
-      await writeBlogPosts(blogPostsArray);
-      res.send(200);
-    } catch (error) {
-      next(error);
+    "/:blogPostId/uploadCover",
+    multer().single("cover"),
+    async (req, res, next) => {
+      try {
+        const errorsList = validationResult(req);
+  
+        if (!errorsList.isEmpty()) {
+          next(createHttpError(400, { errorsList }));
+        } else {
+          console.log(req.file);
+          const extension = extname(req.file.originalname)
+          await saveBlogCover(
+            req.params.blogPostId + extension,
+            req.file.buffer
+          );
+          const blogs = await getBlogPosts();
+          const blogsUrl = blogs.find(
+            (blog) => blog._id === req.params.blogPostId
+          );
+          const coverUrl = `http://localhost:3001/img/blogCover/${req.params.blogPostId}${extension}`
+          blogsUrl.cover = coverUrl;
+          const blogsArray = blogs.filter(
+            (blogs) => blogs._id !== req.params.blogPostId
+          );
+          blogsArray.push(blogsUrl);
+          await writeBlogPosts(blogsArray.reverse());
+          res.send(200);
+        }
+      } catch (error) {
+        next(error);
+      }
     }
-  }
-);
+  );
+
+// blogPostsRouter.post(
+//   "/:blogPostId/uploadCover",
+//   multer().single("cover"),
+//   async (req, res, next) => {
+//     try {
+//       console.log(req.file);
+//       await saveBlogCover(
+//         req.params.blogPostId + "OfTheBlogPost.jpg",
+//         req.file.buffer
+//       );
+//       const blogPosts = await getBlogPosts();
+//       const blogPost = blogPosts.find(
+//         (blogPost) => blogPost.id === req.params.blogPostId
+//       );
+//       const coverUrl = `http://localhost:3001/img/blogPosts/${req.params.blogPostId}OfTheBlogPost.jpg`;
+//       const blogPostWithCover = { ...blogPost, cover: coverUrl };
+//       const remainingblogPosts = blogPosts.filter(
+//         (blogPosts) => blogPosts.id !== req.params.blogPostsId
+//       );
+//       remainingblogPosts.push(blogPostWithCover);
+//       await writeBlogPosts(remainingblogPosts);
+//       res.send({ blogPostWithCover });
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
 
 blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
   try {
@@ -51,7 +87,7 @@ blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
         ...req.body,
         createdAt: new Date(),
         id: uniqid(),
-        content: "HTML",
+        comments: [],
       };
       console.log(newBlogPost);
       const blogPosts = await getBlogPosts();
@@ -105,6 +141,27 @@ blogPostsRouter.put("/:postid", async (req, res, next) => {
     next(error);
   }
 });
+
+blogPostsRouter.post("/:blogPostId/comments", async (req, res, next) => {
+    try {
+      const blogs = await getBlogPosts();
+      const index = blogs.findIndex((blog) => blog.id === req.params.blogPostId);
+      if (index !== -1) {
+        blogs[index].comments.push({
+          ...req.body,
+          id: uniqid(),
+          createdAt: new Date(),
+        });
+        await writeBlogPosts(blogs);
+        res.send(blogs[index].comments);
+      } else {
+        res.status(404).send("not found");
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  });
 
 blogPostsRouter.delete("/:postid", async (req, res, next) => {
   try {
