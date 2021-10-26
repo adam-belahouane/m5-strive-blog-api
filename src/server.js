@@ -25,7 +25,7 @@ server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
 
-const port = 3001;
+const port = process.env.PORT;
 
 console.table(listEndpoints(server));
 
