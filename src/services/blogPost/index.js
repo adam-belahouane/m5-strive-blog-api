@@ -13,68 +13,35 @@ import multer from "multer";
 
 const blogPostsRouter = express.Router();
 
-blogPostsRouter.post(
-    "/:blogPostId/uploadCover",
-    multer().single("cover"),
-    async (req, res, next) => {
-      try {
-        const errorsList = validationResult(req);
-  
-        if (!errorsList.isEmpty()) {
-          next(createHttpError(400, { errorsList }));
-        } else {
-          console.log(req.file);
-          const extension = extname(req.file.originalname)
-          await saveBlogCover(
-            req.params.blogPostId + extension,
-            req.file.buffer
-          );
-          const blogs = await getBlogPosts();
-          const blogsUrl = blogs.find(
-            (blog) => blog._id === req.params.blogPostId
-          );
-          const coverUrl = `http://localhost:3001/img/blogCover/${req.params.blogPostId}${extension}`
-          blogsUrl.cover = coverUrl;
-          const blogsArray = blogs.filter(
-            (blogs) => blogs._id !== req.params.blogPostId
-          );
-          blogsArray.push(blogsUrl);
-          await writeBlogPosts(blogsArray.reverse());
-          res.send(200);
-        }
-      } catch (error) {
-        next(error);
-      }
-    }
-  );
 
-// blogPostsRouter.post(
-//   "/:blogPostId/uploadCover",
-//   multer().single("cover"),
-//   async (req, res, next) => {
-//     try {
-//       console.log(req.file);
-//       await saveBlogCover(
-//         req.params.blogPostId + "OfTheBlogPost.jpg",
-//         req.file.buffer
-//       );
-//       const blogPosts = await getBlogPosts();
-//       const blogPost = blogPosts.find(
-//         (blogPost) => blogPost.id === req.params.blogPostId
-//       );
-//       const coverUrl = `http://localhost:3001/img/blogPosts/${req.params.blogPostId}OfTheBlogPost.jpg`;
-//       const blogPostWithCover = { ...blogPost, cover: coverUrl };
-//       const remainingblogPosts = blogPosts.filter(
-//         (blogPosts) => blogPosts.id !== req.params.blogPostsId
-//       );
-//       remainingblogPosts.push(blogPostWithCover);
-//       await writeBlogPosts(remainingblogPosts);
-//       res.send({ blogPostWithCover });
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
+
+blogPostsRouter.post(
+  "/:blogPostId/uploadCover",
+  multer().single("cover"),
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      await saveBlogCover(
+        req.params.blogPostId + "OfTheBlogPost.jpg",
+        req.file.buffer
+      );
+      const blogPosts = await getBlogPosts();
+      const blogPost = blogPosts.find(
+        (blogPost) => blogPost.id === req.params.blogPostId
+      );
+      const coverUrl = `http://localhost:3001/img/blogPosts/${req.params.blogPostId}OfTheBlogPost.jpg`;
+      const blogPostWithCover = { ...blogPost, cover: coverUrl };
+      const remainingblogPosts = blogPosts.filter(
+        (blogPosts) => blogPosts.id !== req.params.blogPostsId
+      );
+      remainingblogPosts.push(blogPostWithCover);
+      await writeBlogPosts(remainingblogPosts);
+      res.send({ blogPostWithCover });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
   try {
