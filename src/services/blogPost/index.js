@@ -4,15 +4,37 @@ import createHttpError from "http-errors";
 import { extname } from "path"
 import { validationResult } from "express-validator";
 import { blogPostValidation } from "./validation.js";
+import { getPDFReadableStream } from "../../lib/pdf-tools.js";
 import {
   getBlogPosts,
   writeBlogPosts,
   saveBlogCover,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
+import { pipeline } from "stream";
 
 const blogPostsRouter = express.Router();
 
+blogPostsRouter.get("/downloadPDF/:postid", async (req, res, next) => {
+  try {
+    const blogPosts = await getBlogPosts();
+    const blogPost = blogPosts.find((post) => post.id === req.params.postid);
+    if(!blogPost) {
+      res.status(404).send({ message: `blogPost with ${req.params.postid} not found!`})
+    }
+
+    res.setHeader("Content-Disposition", `attachment; filename=${blogPost.title}.pdf`)
+
+    const source = await getPDFReadableStream(blogPost) 
+    const destination = res
+
+    pipeline(source, destination, err => {
+      if (err) next(err)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 
 
 blogPostsRouter.post(
@@ -32,7 +54,7 @@ blogPostsRouter.post(
       const coverUrl = `http://localhost:3001/img/blogPosts/${req.params.blogPostId}OfTheBlogPost.jpg`;
       const blogPostWithCover = { ...blogPost, cover: coverUrl };
       const remainingblogPosts = blogPosts.filter(
-        (blogPosts) => blogPosts.id !== req.params.blogPostsId
+        (blogPosts) => blogPosts.id !== req.params.blogPostId
       );
       remainingblogPosts.push(blogPostWithCover);
       await writeBlogPosts(remainingblogPosts);

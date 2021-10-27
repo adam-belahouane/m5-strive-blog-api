@@ -16,6 +16,18 @@ const server = express();
 const publicFolderPath = join(process.cwd(), "./public");
 
 server.use(express.static(publicFolderPath));
+
+const whitelist = [process.env.FE_URL , process.env.FE_DEV_URL]
+const corsOptions = {
+    origin : function (origin, next) { 
+        if (whitelist.includes(origin)) {
+            next(null , true)
+        } else {
+            next(new Error("CROSS ORIGIN ERROR"))
+        }
+    }
+}
+
 server.use(cors());
 server.use(express.json());
 server.use("/blogPosts", blogPostsRouter);
