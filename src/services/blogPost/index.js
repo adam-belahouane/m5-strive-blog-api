@@ -1,6 +1,7 @@
 import express from "express";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
+import json2csv from "json2csv"
 import { extname } from "path"
 import { validationResult } from "express-validator";
 import { blogPostValidation } from "./validation.js";
@@ -9,11 +10,27 @@ import {
   getBlogPosts,
   writeBlogPosts,
   saveBlogCover,
+  getBlogPostsReadableStream,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
 import { pipeline } from "stream";
 
 const blogPostsRouter = express.Router();
+
+blogPostsRouter.get("/downloadCSV", (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=blogPosts.csv")
+    const source = getBlogPostsReadableStream()
+    const transform = new json2csv.Transform()
+    const destination = res
+
+    pipeline(source, transform, destination, err => {
+      if(err) next(err)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 
 blogPostsRouter.get("/downloadPDF/:postid", async (req, res, next) => {
   try {
