@@ -6,6 +6,7 @@ import { extname } from "path"
 import { validationResult } from "express-validator";
 import { blogPostValidation } from "./validation.js";
 import { getPDFReadableStream } from "../../lib/pdf-tools.js";
+import { sendBlogPostMadeEmail } from "../../lib/email-tools.js";
 import {
   getBlogPosts,
   writeBlogPosts,
@@ -16,6 +17,8 @@ import multer from "multer";
 import { pipeline } from "stream";
 
 const blogPostsRouter = express.Router();
+
+
 
 blogPostsRouter.get("/downloadCSV", (req, res, next) => {
   try {
@@ -53,6 +56,15 @@ blogPostsRouter.get("/downloadPDF/:postid", async (req, res, next) => {
   }
 })
 
+blogPostsRouter.post("/blogPostMade", async (req, res, next) => {
+  try {
+    const {email} = req.body
+    await sendBlogPostMadeEmail(email)
+    res.send(200)
+  } catch (error) {
+    
+  }
+})
 
 blogPostsRouter.post(
   "/:blogPostId/uploadCover",
