@@ -4,12 +4,14 @@ import listEndpoints from "express-list-endpoints";
 import { join } from "path";
 import blogPostsRouter from "./services/blogPost/index.js";
 import authorsRouter from "./services/authors/index.js";
+import mongoose from "mongoose"
 
 import {
   genericErrorHandler,
   badRequestHandler,
   notFoundHandler,
 } from "./errorHandlers.js";
+
 
 const server = express();
 
@@ -39,8 +41,18 @@ server.use(genericErrorHandler);
 
 const port = process.env.PORT;
 
-console.table(listEndpoints(server));
+mongoose.connect(process.env.MONGO_CONNECTION)
 
-server.listen(port, () => {
-  console.log("server on port:", port);
-});
+mongoose.connection.on("connected", () => {
+  console.log("Mongo Connected!")
+
+  server.listen(port, () => {
+    console.table(listEndpoints(server))
+
+    console.log(`Server running on port ${port}`)
+  })
+})
+
+mongoose.connection.on("error", err => {
+  console.log(err)
+})
