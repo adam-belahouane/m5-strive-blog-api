@@ -7,6 +7,11 @@ blogPostsRouter.route("/")
 .post(blogPostHandlers.createNew)
 .get(blogPostHandlers.getAll)
 
+blogPostsRouter.route("/:id")
+.get(blogPostHandlers.getOne)
+.put(blogPostHandlers.editOne)
+.delete(blogPostHandlers.deleteOne)
+
 export default blogPostsRouter
 
 
