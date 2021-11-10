@@ -12,6 +12,15 @@ blogPostsRouter.route("/:id")
 .put(blogPostHandlers.editOne)
 .delete(blogPostHandlers.deleteOne)
 
+blogPostsRouter.route("/:id/comments")
+.get(blogPostHandlers.getComments)
+.post(blogPostHandlers.newComment)
+
+blogPostsRouter.route("/:id/comments/:comment")
+.get(blogPostHandlers.getSingleComment)
+.put(blogPostHandlers.updateComment)
+.delete(blogPostHandlers.deleteComment)
+
 export default blogPostsRouter
 
 

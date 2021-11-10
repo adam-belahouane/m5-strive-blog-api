@@ -97,13 +97,16 @@ const getSingleComment = async (req, res, next) => {
 const newComment = async (req, res, next) => {
   try {
     const post = await blogPost.findById(req.params.id, { _id: 0 });
+    console.log(post)
     if (post) {
       const commentToInsert = { ...req.body, commentDate: new Date() };
+      console.log(commentToInsert)
       const updatedPost = await blogPost.findByIdAndUpdate(
         req.params.id,
-        { $push: { comments: commentToInsert } },
+        { $push: { Comments: commentToInsert } },
         { new: true }
       );
+      console.log(updatedPost)
 
       if (updatedPost) {
         res.send(updatedPost);
@@ -132,7 +135,7 @@ const deleteComment = async (req, res, next) => {
   try {
       const deleted = await blogPost.findByIdAndUpdate(
           req.params.id,
-          {$pull: {comments: {_id: req.params.commentId}}},
+          {$pull: {Comments: {_id: req.params.commentId}}},
           {new: true}
       )
       if(deleted) {
