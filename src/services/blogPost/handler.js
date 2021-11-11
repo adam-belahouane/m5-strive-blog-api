@@ -10,7 +10,8 @@ const getAll = async (req, res, next) => {
       .find(mongoQuery.criteria)
       .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
-      .sort(mongoQuery.options.sort);
+      .sort(mongoQuery.options.sort)
+      .populate({path:"author"})
     res.send({
       links: mongoQuery.links("/blogPosts", total),
       pageTotal: Math.ceil(total / mongoQuery.options.limit),
@@ -25,9 +26,7 @@ const getAll = async (req, res, next) => {
 const createNew = async (req, res, next) => {
   try {
     const author = await AuthorModel.findById(req.body.author)
-    console.log(author)
-    const newBlogPost = new blogPost({...req.body, author: author});
-    console.log(newBlogPost)
+    const newBlogPost = new blogPost(req.body);
     await newBlogPost.save();
 
     res.status(201).send({ newBlogPost });
