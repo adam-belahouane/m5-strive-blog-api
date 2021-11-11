@@ -15,14 +15,7 @@ const blogPostSchema = new Schema(
         unit: { type: String, default: "minutes" },
       },
     },
-    author: {
-      type: Object,
-      required: true,
-      nested: {
-        name: { type: String, required: true },
-        avatar: { type: String, required: false },
-      },
-    },
+    author: { type: Schema.Types.ObjectId, ref: "Author"},
     content: { type: String, required: true },
     Comments: [
       {

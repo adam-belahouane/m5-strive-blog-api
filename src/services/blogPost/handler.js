@@ -1,5 +1,6 @@
 import q2m from "query-to-mongo";
 import blogPost from "./schema.js";
+import AuthorModel from "../authors/schema.js"
 
 const getAll = async (req, res, next) => {
   try {
@@ -23,7 +24,10 @@ const getAll = async (req, res, next) => {
 
 const createNew = async (req, res, next) => {
   try {
-    const newBlogPost = new blogPost(req.body);
+    const author = await AuthorModel.findById(req.body.author)
+    console.log(author)
+    const newBlogPost = new blogPost({...req.body, author: author});
+    console.log(newBlogPost)
     await newBlogPost.save();
 
     res.status(201).send({ newBlogPost });
