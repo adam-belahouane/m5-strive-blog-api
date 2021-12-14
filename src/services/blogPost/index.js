@@ -1,11 +1,16 @@
 import express from "express"
 import blogPostHandlers from "./handler.js"
+import { basicAuthMiddleware } from "../../auth/basic.js"
+import { adminOnlyMiddleware } from "../../auth/admin.js"
 
 const blogPostsRouter = express.Router()
 
-blogPostsRouter.route("/")
-.post(blogPostHandlers.createNew)
+blogPostsRouter.route("/me")
+.post(basicAuthMiddleware, blogPostHandlers.createNew)
 .get(blogPostHandlers.getAll)
+
+blogPostsRouter.route("/me/stories")
+.get( basicAuthMiddleware, blogPostHandlers.getMyPosts)
 
 blogPostsRouter.route("/:id")
 .get(blogPostHandlers.getOne)

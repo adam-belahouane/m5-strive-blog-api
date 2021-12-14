@@ -47,12 +47,41 @@ const deleteAuthor = async (req, res, next) => {
     }
 }
 
+const getMe = async (req, res, next) => {
+    try {
+        res.send(req.author)
+      } catch (error) {
+        next(error)
+      }
+}
+
+const editMe = async (req, res, next) => {
+    try {
+        const author = await AuthorModel.findByIdAndUpdate(req.author.id, req.body)
+        res.send()
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteMe = async (req, res, next) => {
+    try {
+        await AuthorModel.findByIdAndDelete(req.author.id)
+        res.send()
+    } catch (error) {
+        next(error)
+    }
+}
+
 const authorHandlers = {
     getAllAuthors,
     createNewAuthor,
     getOneAuthor,
     editAuthor,
-    deleteAuthor
+    deleteAuthor,
+    getMe,
+    editMe,
+    deleteMe
 }
 
 export default authorHandlers

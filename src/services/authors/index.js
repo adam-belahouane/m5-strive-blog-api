@@ -1,16 +1,24 @@
 import express from "express";
 import authorHandlers from "./handlers.js";
+import { basicAuthMiddleware } from "../../auth/basic.js"
+import { adminOnlyMiddleware } from "../../auth/admin.js"
 
 const authorsRouter = express.Router();
 
 authorsRouter.route("/")
-.get(authorHandlers.getAllAuthors)
+.get( basicAuthMiddleware, authorHandlers.getAllAuthors)
 .post(authorHandlers.createNewAuthor)
 
+authorsRouter.route("/me")
+.get( basicAuthMiddleware,authorHandlers.getMe)
+.put( basicAuthMiddleware, authorHandlers.editMe)
+.delete( basicAuthMiddleware, authorHandlers.deleteMe)
+
 authorsRouter.route("/:id")
-.get(authorHandlers.getOneAuthor)
-.put(authorHandlers.editAuthor)
-.delete(authorHandlers.deleteAuthor)
+.get( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.getOneAuthor)
+.put( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.editAuthor)
+.delete( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.deleteAuthor)
+
 
 
 export default authorsRouter;

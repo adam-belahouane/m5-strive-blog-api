@@ -25,7 +25,7 @@ const getAll = async (req, res, next) => {
 
 const createNew = async (req, res, next) => {
   try {
-    const author = await AuthorModel.findById(req.body.author)
+    req.body.author = req.author._id
     const newBlogPost = new blogPost(req.body);
     await newBlogPost.save();
 
@@ -34,6 +34,15 @@ const createNew = async (req, res, next) => {
     next(error);
   }
 };
+
+const getMyPosts = async (req, res, next) => {
+  try {
+    const myPosts = await blogPost.find({author: req.author._id})
+    res.send(myPosts)
+  } catch (error) {
+    next(error)
+  }
+}
 
 const getOne = async (req, res, next) => {
   try {
@@ -159,7 +168,8 @@ const blogPostHandlers = {
   getSingleComment,
   newComment,
   updateComment,
-  deleteComment
+  deleteComment,
+  getMyPosts
 };
 
 export default blogPostHandlers;
