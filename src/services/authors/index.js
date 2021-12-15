@@ -1,165 +1,30 @@
 import express from "express";
 import authorHandlers from "./handlers.js";
-import { basicAuthMiddleware } from "../../auth/basic.js"
 import { adminOnlyMiddleware } from "../../auth/admin.js"
+import { JWTAuthMiddleware } from "../../auth/token.js";
 
 const authorsRouter = express.Router();
 
 authorsRouter.route("/")
-.get( basicAuthMiddleware, authorHandlers.getAllAuthors)
-.post(authorHandlers.createNewAuthor)
+.get( JWTAuthMiddleware, authorHandlers.getAllAuthors)
 
 authorsRouter.route("/me")
-.get( basicAuthMiddleware,authorHandlers.getMe)
-.put( basicAuthMiddleware, authorHandlers.editMe)
-.delete( basicAuthMiddleware, authorHandlers.deleteMe)
+.get( JWTAuthMiddleware,authorHandlers.getMe)
+.put( JWTAuthMiddleware, authorHandlers.editMe)
+.delete( JWTAuthMiddleware, authorHandlers.deleteMe)
+
+authorsRouter.route("/login")
+.post(authorHandlers.loginAuthor)
+
+authorsRouter.route("/register")
+.post(authorHandlers.createNewAuthor)
 
 authorsRouter.route("/:id")
-.get( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.getOneAuthor)
-.put( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.editAuthor)
-.delete( basicAuthMiddleware, adminOnlyMiddleware, authorHandlers.deleteAuthor)
+.get( JWTAuthMiddleware, adminOnlyMiddleware, authorHandlers.getOneAuthor)
+.put( JWTAuthMiddleware, adminOnlyMiddleware, authorHandlers.editAuthor)
+.delete( JWTAuthMiddleware, adminOnlyMiddleware, authorHandlers.deleteAuthor)
 
 
 
 export default authorsRouter;
 
-
-
-
-
-
-
-
-
-
-
-// import uniqid from "uniqid";
-// import {
-//   getAuthors,
-//   writeAuthors,
-//   saveAuthorsAvatars,
-// } from "../../lib/fs-tools.js";
-// import multer from "multer";
-
-// authorsRouter.post(
-  //   "/:authorId/uploadAvatar",
-  //   multer().single("authorAvatar"),
-  //   async (req, res, next) => {
-  //     try {
-  //       console.log(req.file);
-  //       await saveAuthorsAvatars(
-  //         req.params.authorId + "OfTheAuthor.jpg",
-  //         req.file.buffer
-  //       );
-  //       const authors = await getAuthors();
-  //       const author = authors.find(
-  //         (author) => author.id === req.params.authorId
-  //       );
-  //       const avatarUrl = `http://localhost:3001/img/authors/${req.params.authorId}OfTheAuthor.jpg`;
-  //       const authorWithCover = { ...author, avatar: avatarUrl };
-  //       const authorsArray = authors.filter(
-  //         (blogs) => blogs.id !== req.params.authorsId
-  //       );
-  //       authorsArray.push(authorWithCover);
-  //       await writeAuthors(authorsArray);
-  //       res.send(200);
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   }
-  // );
-  
-  // authorsRouter.post("/", async (req, res, next) => {
-  //   try {
-  //     console.log(req.body);
-  //     const newauthor = { ...req.body, createdAt: new Date(), id: uniqid() };
-  //     console.log(newauthor);
-  //     const authors = await getAuthors();
-  //     authors.push(newauthor);
-  //     await writeAuthors(authors);
-  //     res.status(201).send({ newauthor });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
-  
-  // authorsRouter.post("/checkemail", async (req, res, next) => {
-  //   try {
-  //     if (
-  //       authors.filter((author) => author.email === req.body.email).length > 0
-  //     ) {
-  //       res.status(403).send({ succes: false, data: "User already exist" });
-  //     } else {
-  //       res.status(201).send({ succes: true });
-  //     }
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  //   const authors = await getAuthors();
-  // });
-  
-  // authorsRouter.get("/", async (req, res, next) => {
-  //   try {
-  //     const arrayOfAuthors = await getAuthors();
-  //     res.send(arrayOfAuthors);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
-  
-  // // authorsRouter.get("/", async (req, res) => {
-  // //   const fileContent = fs.readFileSync(authorsJSONPath);
-  
-  // //   console.log(JSON.parse(fileContent));
-  
-  // //   const arrayOfauthors = JSON.parse(fileContent);
-  // //   res.send(arrayOfauthors);
-  // // });
-  
-  // authorsRouter.get("/:authorId", async (req, res) => {
-  //   try {
-  //     const authors = await getAuthors();
-  
-  //     const author = authors.find((s) => s.id === req.params.authorId);
-  
-  //     res.send(author);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
-  
-  // authorsRouter.put("/:authorId", async (req, res) => {
-  //   try {
-  //     const authors = await getAuthors();
-  
-  //     const index = authors.findIndex(
-  //       (author) => author.id === req.params.authorId
-  //     );
-  
-  //     const updatedauthor = { ...authors[index], ...req.body };
-  
-  //     authors[index] = updatedauthor;
-  
-  //     await writeAuthors(authors);
-  
-  //     res.send(updatedauthor);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
-  
-  // authorsRouter.delete("/:authorId", async (req, res) => {
-  //   try {
-  //     const authors = await getAuthors();
-  
-  //     const remainingauthors = authors.filter(
-  //       (author) => author.id !== req.params.authorId
-  //     );
-  
-  //     await writeAuthors(remainingauthors);
-  
-  //     res.status(204).send();
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
