@@ -5,6 +5,8 @@ import { join } from "path";
 import blogPostsRouter from "./services/blogPost/index.js";
 import authorsRouter from "./services/authors/index.js";
 import mongoose from "mongoose"
+import googleCloudStrategy from "./auth/OAuth.js";
+import passport from "passport";
 
 import {
   genericErrorHandler,
@@ -14,6 +16,8 @@ import {
 
 
 const server = express();
+
+passport.use("google", googleCloudStrategy)
 
 const publicFolderPath = join(process.cwd(), "./public");
 
@@ -32,6 +36,7 @@ const corsOptions = {
 
 server.use(cors());
 server.use(express.json());
+server.use(passport.initialize())
 server.use("/blogPosts", blogPostsRouter);
 server.use("/authors", authorsRouter);
 
